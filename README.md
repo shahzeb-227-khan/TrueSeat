@@ -154,10 +154,10 @@ npm run dev
 | Member | Role |
 |---|---|
 | **Shahzeb Alam** (lead) | AI and verification |
-| **Muneeb Ahmed** | Backend, data and security |
-| **Shah Iman** | Product, frontend and communication |
+| **Muneeb Asghar** | Backend, data and security |
+| **Ahmed Saleem** | Product, frontend and communication |
 
-NED University of Engineering & Technology, Karachi.
+Final-year Software Engineering students, NED University of Engineering & Technology, Karachi.
 
 ---
 

@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Event** | Build The Next Big Thing with AI — Devmarketplace × NED University of Engineering & Technology |
-| **Team** | Shahzeb Alam (lead) · Muneeb Ahmed |
+| **Team** | Shahzeb Alam (lead) · Muneeb Asghar · Ahmed Saleem — final-year Software Engineering students, NED University of Engineering & Technology, Karachi |
 | **Build window** | 19 Oct 2026, 9:00 AM PKT → 22 Oct 2026, 11:00 PM PKT |
 | **Document status** | Pre-build specification. Everything below describes the **planned** product. No product code exists before 19 Oct 2026, 9:00 AM PKT. |
 | **One-line pitch** | TrueSeat is an AI verification agent that reads a study-abroad admission letter, scholarship letter, fee receipt or consultant chat, checks it against official government registers of licensed universities, and tells a Pakistani student or parent, in Urdu or English and with quoted evidence, what checks out, what doesn't, and how to verify it independently before paying anyone. |
@@ -83,7 +83,7 @@ The official advice is simple: check that the institution is licensed to admit i
 
 The MVP uses one account type. Each user sees only their own cases.
 
-**Launch context:** NED University students are themselves the target users, which makes the problem easy to test with real people during the build.
+**Launch context:** we are final-year Software Engineering students at NED University, and NED students are themselves the target users, which makes the problem easy to test with real people during the build.
 
 ---
 
@@ -479,8 +479,8 @@ Prepared during the event and reported honestly in the README with its sample si
 | Member | Role | Owns |
 |---|---|---|
 | **Shahzeb Alam** (team lead) | AI and verification lead | Extraction schemas and prompts, red-flag scan, quote-guard, number-and-name guard, explain-and-draft, provider wrapper with fallback, evaluation set; coordinates scope and submission |
-| **Muneeb Ahmed** | Backend, data and security lead | Supabase schema and migrations, RLS and storage policies, TOTP enrolment and challenge, registry importers and `pg_trgm` matching, domain and payment checks, orchestrator persistence, deployment, keep-alive, isolation tests |
-| **Shah Iman** | Product, frontend and communication lead | All five screens, live progress view, Urdu copy, accessibility and mobile layout, README / SPEC / AI_DISCLOSURE upkeep, user testing with students, demo video |
+| **Muneeb Asghar** | Backend, data and security lead | Supabase schema and migrations, RLS and storage policies, TOTP enrolment and challenge, registry importers and `pg_trgm` matching, domain and payment checks, orchestrator persistence, deployment, keep-alive, isolation tests |
+| **Ahmed Saleem** | Product, frontend and communication lead | All five screens, live progress view, Urdu copy, accessibility and mobile layout, README / SPEC / AI_DISCLOSURE upkeep, user testing with students, demo video |
 
 **Integration points:**
 - **Mon 11:00** — freeze `lib/schemas.ts` (Extraction, Finding, Verdict, Draft). All three build against it.
@@ -509,8 +509,8 @@ Everyone commits from their own account, in small commits, every day. All three 
 
 Two reusable components we write during the event and extract from our own code:
 
-1. **`quote-guard`** — a TypeScript utility that validates LLM findings against source text: each finding must quote text that actually appears in the referenced document (whitespace, case and Unicode normalised), codes must belong to an allowed catalogue, and unsupported findings are dropped with a reason. Useful for any AI product that must cite evidence. *Author: Shahzeb Alam; tests: Muneeb Ahmed.*
-2. **`supabase-mfa-guard`** — Next.js components and helpers for Supabase TOTP: enrolment with QR code, challenge screen, AAL2 route and API guard, and SQL templates for RLS policies that require `aal2`. Every hackathon team needs this. *Author: Muneeb Ahmed; UI: Shah Iman.*
+1. **`quote-guard`** — a TypeScript utility that validates LLM findings against source text: each finding must quote text that actually appears in the referenced document (whitespace, case and Unicode normalised), codes must belong to an allowed catalogue, and unsupported findings are dropped with a reason. Useful for any AI product that must cite evidence. *Author: Shahzeb Alam; tests: Muneeb Asghar.*
+2. **`supabase-mfa-guard`** — Next.js components and helpers for Supabase TOTP: enrolment with QR code, challenge screen, AAL2 route and API guard, and SQL templates for RLS policies that require `aal2`. Every hackathon team needs this. *Author: Muneeb Asghar; UI: Ahmed Saleem.*
 
 **Spare:** `domain-impersonation-check` — official-domain match, free-mail and look-alike detection.
 
