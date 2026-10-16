@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Event** | Build The Next Big Thing with AI — Devmarketplace × NED University of Engineering & Technology |
-| **Team** | Shahzeb Alam (lead) · Muneeb Ahmed · Shah Iman |
+| **Team** | Shahzeb Alam (lead) · Muneeb Ahmed |
 | **Build window** | 19 Oct 2026, 9:00 AM PKT → 22 Oct 2026, 11:00 PM PKT |
 | **Document status** | Pre-build specification. Everything below describes the **planned** product. No product code exists before 19 Oct 2026, 9:00 AM PKT. |
 | **One-line pitch** | TrueSeat is an AI verification agent that reads a study-abroad admission letter, scholarship letter, fee receipt or consultant chat, checks it against official government registers of licensed universities, and tells a Pakistani student or parent, in Urdu or English and with quoted evidence, what checks out, what doesn't, and how to verify it independently before paying anyone. |
