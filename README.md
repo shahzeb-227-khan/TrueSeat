@@ -101,6 +101,10 @@ Each import records the source URL, download date and row count, and the app alw
 
 ---
 
+## Phase 1 scaffold (current)
+
+`npm install && npm run dev`. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (see `.env.example`). Routes: `/sign-in`, `/sign-up`, protected `/cases`, `GET /api/health`. Without the vars the sign-in page renders with a configuration notice.
+
 ## Getting started *(planned)*
 
 Setup instructions will be added during the build. Planned outline:
