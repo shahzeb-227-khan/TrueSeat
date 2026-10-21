@@ -1,66 +1,73 @@
-- REPO OWNERSHIP (folder → owner)
+- Project: TrueSeat — short architecture reference (tables & bullets only)
 
-| Path / file patterns | Owner |
-|---|---:|
+1) Folder ownership
+
+| Path (folder or file) | Owner |
+|---|---|
 | lib/schemas.ts | AI |
 | lib/ai/* | AI |
-| prompts/* | AI |
-| evals/* | AI |
+| prompts/ | AI |
+| evals/ | AI |
 | app/api/runs/* | AI |
 | supabase/migrations/* | Backend |
 | lib/supabase/* | Backend |
 | lib/checks/* | Backend |
-| app/(auth)/* | Backend |
 | app/api/cases/* | Backend |
+| app/(auth)/* (MFA pages) | Backend |
 | app/(app)/* | Frontend |
 | components/* | Frontend |
 | lib/mock.ts | Frontend |
-| docs/* | Frontend (lead coordination) |
-| middleware.ts | Backend |
-| package.json, tsconfig.json, next.config.mjs | Lead (coord.) |
+| tests/* | Backend (test harness) |
+| docs/* | Shared (lead-reviewed) |
 
-- MODULE CONTRACTS (TypeScript signatures only)
+2) Module contracts (TypeScript signatures only)
 
-Types (zod-exported names):
-- type Case
-- type Extraction
-- type Finding
-- type Verdict
-- type RunStage
+- type Case = { id: string; userId: string; title?: string; destinationCountry?: string; createdAt: string };
+- type Extraction = z.infer<typeof ExtractionModelOutputSchema>; // see lib/schemas.ts
+- type Finding = z.infer<typeof FindingSchema>; // see lib/schemas.ts
+- type Verdict = z.infer<typeof VerdictSchema>; // see lib/schemas.ts
 
-Key function signatures:
 - function runChecks(extraction: Extraction): Promise<Finding[]>
-- function computeVerdict(findings: Finding[]): Verdict
-- function extractDocument(input: { kind: 'file'; mimeType: string; base64: string } | { kind: 'text'; text: string }): Promise<{ ok: boolean; data: Extraction; rawText: string }>
-- function lookupInstitution(supabase: any, name: string, destinationCountry: string): Promise<{ result: 'listed' | 'not_found' | 'ambiguous'; matched?: any; candidates: any[] }>
-- function composeVerdict(findings: Finding[], options?: { destinationCountry?: string }): Verdict
-- function scanRedFlags(docs: { documentId: string; rawText: string }[]): Promise<{ ok: boolean; issues: any[] }>
-- function createUserClient(accessToken: string): import('@supabase/supabase-js').SupabaseClient
+- function computeVerdict(findings: Finding[], context: { registryResult: 'listed'|'ambiguous'|'not_found'|'country_not_supported'; allSenderDomainsMatch: boolean; payeeIsInstitution: boolean; essentialFieldsReadable: boolean; aiAvailable: boolean; }): Verdict
+- function extractDocument(file: { path: string; mimeType: string; pages?: number }): Promise<Extraction>
 
-- MVP CUT (3-hour checklist)
+3) MVP cut (3-hour checklist)
 
-- [ ] Sign up (email+password) with inbox message
-- [ ] Mandatory TOTP 2FA: enroll (/mfa/enroll) and challenge (/mfa/challenge)
-- [ ] AAL2 gate enforced by middleware for protected routes
-- [ ] Create case UI wired to lib/mock.ts
-- [ ] Upload single document (letter) to evidence bucket (mocked for frontend)
-- [ ] Extraction stage returns Extraction (mock or AI)
-- [ ] Registry lookup (seeded subset) and domain check (lib/checks)
-- [ ] Compute verdict in code and display verdict card
-- [ ] Case list shows created cases (frontend reads lib/mock.ts)
+- [ ] Sign up with email/password
+- [ ] Mandatory TOTP 2FA enrol + challenge (AAL2 gate)
+- [ ] Create a case (title, destination country)
+- [ ] Upload one document (offer / scholarship / fee / chat)
+- [ ] Extraction: extractDocument(file) → zod-validated Extraction
+- [ ] Registry lookup (UK CSV baseline) + trigram name match
+- [ ] Domain check (official domains, free-mail, look-alike)
+- [ ] Payment destination check (payee, wallet, cash, third-party)
+- [ ] Cross-document consistency checks (amounts, names, dates)
+- [ ] Red-flag scan (model flags + quote-guard)
+- [ ] composeVerdict to produce Verdict (code-only rules)
+- [ ] Case saved with findings, verdict, ai_runs and drafts
+- [ ] Frontend builds against lib/mock.ts for early UX
 
-- GATE RISKS & PROTECTIONS (one-line each)
+4) Gate risks and protections (one line each)
 
-- 2FA: enforce AAL2 on edge and server; non-AAL2 sessions limited to /mfa/*, /sign-in, /sign-up and /api/health.
-- Isolation: strict folder ownership, per-user RLS, frontend builds against lib/mock.ts first.
-- DB persistence: persist each pipeline stage before advancing; use transactional writes where available.
+- 2FA: mandatory TOTP enforced in middleware; RLS policies require aal2 in JWT claims.
+- Isolation: row-level security (user_id = auth.uid()) and private storage paths per user_id.
+- DB persistence: every pipeline stage persisted (ai_runs, case_runs, findings, extractions) before next stage starts.
 
-- STACK (single-line list)
+5) Stack & runtime notes (bullets)
 
-- Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Supabase (Auth+Storage+Postgres), Claude primary + Gemini fallback
+- Framework: Next.js (App Router) + TypeScript
+- UI: Tailwind + shadcn/ui
+- DB/Auth/Storage: Supabase (Postgres, RLS, pg_trgm, MFA)
+- AI: Claude primary, Gemini fallback; same zod schemas enforced server-side
+- Test: vitest for unit tests; isolation script for manual cross-account checks
 
-- NOTES / CONSTRAINTS (bullets only)
+6) Ownership & coordination rules (bullets)
 
-- Frontend must build against lib/mock.ts first; avoid runtime dependency on AI or server pipelines during UI development.
-- Service-role key NEVER used in browser or middleware; server-only usage requires explicit approval.
-- Refer to SPEC.md and AGENTS.md for pipeline and ownership details; if conflicts exist, flag AGENTS.md (do not edit it).
+- AI owner freezes lib/schemas.ts; any schema change requires cross-team PR review.
+- Frontend must develop against lib/mock.ts until AI/backend extraction API exists.
+- Code (backend) computes the final verdict; model outputs are only findings/evidence.
+
+7) References (short pointers)
+
+- See SPEC.md §7 (AI design) and §8 (deterministic checks) for stage definitions and rule lists.
+- See AGENTS.md for core rule: "Code computes verdict; model only reads and explains."
