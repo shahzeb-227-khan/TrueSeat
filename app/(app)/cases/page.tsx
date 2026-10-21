@@ -1,5 +1,6 @@
 import { SignOutButton } from "@/components/sign-out-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { NewCaseForm } from "@/components/cases/new-case-form";
+import { CaseList } from "@/components/cases/case-list";
 
 export default function CasesPage() {
   return (
@@ -8,13 +9,8 @@ export default function CasesPage() {
         <h1 className="text-2xl font-semibold">Cases</h1>
         <SignOutButton />
       </header>
-      <Card>
-        <CardHeader>
-          <CardTitle>No cases yet</CardTitle>
-          <CardDescription>Your verification cases will appear here.</CardDescription>
-        </CardHeader>
-        <CardContent />
-      </Card>
+      <NewCaseForm />
+      <CaseList />
     </main>
   );
 }
