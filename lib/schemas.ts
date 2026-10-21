@@ -1,65 +1,134 @@
-import { z } from "zod";
 
-// Case and document types shared by API routes and UI.
-// Bootstrap subset for the case-creation phase. Extraction, Finding and Verdict types come later.
+// ---------------------------------------------------------------------------
+// Verification types (Extraction, Finding, Verdict). Match the Supabase tables.
+// ---------------------------------------------------------------------------
 
-export const DESTINATION_COUNTRIES = ["GB", "CA", "US", "OTHER"] as const;
-export type DestinationCountry = (typeof DESTINATION_COUNTRIES)[number];
+export const VERDICTS = ["high_risk", "suspicious", "checks_passed", "could_not_verify"] as const;
+export type Verdict = z.infer<typeof VerdictSchema>;
+export const VerdictSchema = z.enum(VERDICTS);
 
-export const CASE_STATUSES = [
-  "open",
-  "waiting_university",
-  "verified_by_university",
-  "reported",
-  "closed",
+export const SEVERITIES = ["high", "medium", "info"] as const;
+export const SeveritySchema = z.enum(SEVERITIES);
+export type Severity = z.infer<typeof SeveritySchema>;
+
+export const FINDING_SOURCES = ["code", "model"] as const;
+
+export const RED_FLAG_CODES = [
+  "GUARANTEED_VISA",
+  "GUARANTEED_ADMISSION_OR_SCHOLARSHIP",
+  "SCHOLARSHIP_REQUIRES_FEE",
+  "PERSONAL_OR_WALLET_PAYMENT",
+  "CASH_PAYMENT",
+  "FREE_EMAIL_SENDER",
+  "LOOKALIKE_DOMAIN",
+  "INSIDER_CONNECTION_CLAIM",
+  "OFFICIAL_IMPERSONATION_CLAIM",
+  "EXTREME_URGENCY",
+  "SECRECY_REQUEST",
+  "AMOUNT_MISMATCH",
+  "NAME_MISMATCH",
+  "DATE_INCONSISTENCY",
 ] as const;
-export type CaseStatus = (typeof CASE_STATUSES)[number];
+export type RedFlagCode = (typeof RED_FLAG_CODES)[number];
 
-export const DOC_TYPES = ["offer_letter", "scholarship_letter"] as const;
-export type DocType = (typeof DOC_TYPES)[number];
+export const MODEL_FLAG_CODES = [
+  "GUARANTEED_VISA",
+  "GUARANTEED_ADMISSION_OR_SCHOLARSHIP",
+  "SCHOLARSHIP_REQUIRES_FEE",
+  "INSIDER_CONNECTION_CLAIM",
+  "OFFICIAL_IMPERSONATION_CLAIM",
+  "EXTREME_URGENCY",
+  "SECRECY_REQUEST",
+] as const;
 
-export const ACCEPTED_MIME_TYPES = ["application/pdf", "image/jpeg", "image/png"] as const;
-export type AcceptedMimeType = (typeof ACCEPTED_MIME_TYPES)[number];
+// Confidence threshold: fields below this are flagged for the user to confirm.
+export const CONFIDENCE_THRESHOLD = 0.7;
 
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const Confidence = z.number().min(0).max(1);
 
-export const CaseCreateSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, "Give the case a title.")
-    .max(120, "Keep the title under 120 characters."),
-  destinationCountry: z.enum(DESTINATION_COUNTRIES, {
-    errorMap: () => ({ message: "Choose a destination." }),
-  }),
+// A single value the model read from a document, with its confidence and a quote.
+// Missing values are null, never guessed.
+export const ExtractedFieldSchema = <T extends z.ZodTypeAny>(inner: T) =>
+  z.object({
+    value: inner.nullable(),
+    confidence: Confidence,
+    quote: z.string().nullable(),
+  });
+
+export const ExtractionFieldsSchema = z.object({
+  institutionName: ExtractedFieldSchema(z.string()),
+  studentName: ExtractedFieldSchema(z.string()),
+  programme: ExtractedFieldSchema(z.string()),
+  intake: ExtractedFieldSchema(z.string()),
+  issueDate: ExtractedFieldSchema(z.string()),
+  deadlineDate: ExtractedFieldSchema(z.string()),
+  tuitionAmount: ExtractedFieldSchema(z.number()),
+  currency: ExtractedFieldSchema(z.string()),
+  payeeName: ExtractedFieldSchema(z.string()),
+  paymentMethod: ExtractedFieldSchema(z.string()),
+  senderEmails: ExtractedFieldSchema(z.array(z.string())),
+  urls: ExtractedFieldSchema(z.array(z.string())),
 });
-export type CaseCreate = z.infer<typeof CaseCreateSchema>;
+export type ExtractionFields = z.infer<typeof ExtractionFieldsSchema>;
 
-export const DocumentMetaSchema = z.object({
-  docType: z.enum(DOC_TYPES, {
-    errorMap: () => ({ message: "Choose the type of letter." }),
-  }),
+// What the model must return for one document (the model also returns the text it read).
+export const ExtractionModelOutputSchema = z.object({
+  rawText: z.string(),
+  fields: ExtractionFieldsSchema,
 });
+export type ExtractionModelOutput = z.infer<typeof ExtractionModelOutputSchema>;
 
-export const CaseSchema = z.object({
+export const ExtractionSchema = z.object({
   id: z.string().uuid(),
-  title: z.string(),
-  destinationCountry: z.enum(DESTINATION_COUNTRIES),
-  status: z.enum(CASE_STATUSES),
+  documentId: z.string().uuid(),
+  fields: ExtractionFieldsSchema,
+  userConfirmed: z.boolean(),
+  model: z.string().nullable(),
+  promptVersion: z.string().nullable(),
   createdAt: z.string(),
-  updatedAt: z.string(),
 });
-export type Case = z.infer<typeof CaseSchema>;
+export type Extraction = z.infer<typeof ExtractionSchema>;
 
-export const DocumentSchema = z.object({
+// A model-detected red flag. The quote MUST appear in the stored document text (quote-guard).
+export const ModelFlagSchema = z.object({
+  code: z.enum(MODEL_FLAG_CODES),
+  quote: z.string().min(3),
+});
+export const ModelFlagsOutputSchema = z.object({
+  flags: z.array(ModelFlagSchema),
+});
+export type ModelFlag = z.infer<typeof ModelFlagSchema>;
+
+export const FindingSchema = z.object({
+  id: z.string().uuid().optional(),
+  source: z.enum(FINDING_SOURCES),
+  code: z.string(),
+  severity: SeveritySchema,
+  documentId: z.string().uuid().nullable(),
+  quote: z.string().nullable(),
+  details: z.record(z.unknown()).default({}),
+});
+export type Finding = z.infer<typeof FindingSchema>;
+
+export const REGISTRY_RESULTS = ["listed", "ambiguous", "not_found", "country_not_supported"] as const;
+export type RegistryResult = (typeof REGISTRY_RESULTS)[number];
+
+export const DOMAIN_RESULTS = ["match", "free_mail", "lookalike", "unrelated", "unknown"] as const;
+export type DomainResult = (typeof DOMAIN_RESULTS)[number];
+
+export const RUN_STATUSES = ["running", "completed", "partial", "failed"] as const;
+export type RunStatus = (typeof RUN_STATUSES)[number];
+
+export const CaseRunSchema = z.object({
   id: z.string().uuid(),
   caseId: z.string().uuid(),
-  docType: z.enum(DOC_TYPES),
-  mimeType: z.enum(ACCEPTED_MIME_TYPES),
-  originalName: z.string(),
-  sizeBytes: z.number().int().positive(),
-  uploadedAt: z.string(),
+  status: z.enum(RUN_STATUSES),
+  stage: z.string().nullable(),
+  verdict: VerdictSchema.nullable(),
+  errorCode: z.string().nullable(),
+  createdAt: z.string(),
 });
-export type CaseDocument = z.infer<typeof DocumentSchema>;
+export type CaseRun = z.infer<typeof CaseRunSchema>;
 
-export type CaseWithDocuments = Case & { documents: CaseDocument[] };
+export const VERDICT_DISCLAIMER =
+  "This does not prove the offer is genuine. Confirm it with the university using the official contact below.";
