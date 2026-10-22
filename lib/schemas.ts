@@ -5,7 +5,15 @@ import { z } from "zod";
 export const DESTINATION_COUNTRIES = ["GB", "CA", "US", "OTHER"] as const;
 export type DestinationCountry = (typeof DESTINATION_COUNTRIES)[number];
 
-export const CASE_STATUSES = ["open", "running", "reviewed", "closed"] as const;
+// Matches the check constraint on cases.status in
+// supabase/migrations/20261020182044_create_cases_and_documents.sql.
+export const CASE_STATUSES = [
+  "open",
+  "waiting_university",
+  "verified_by_university",
+  "reported",
+  "closed",
+] as const;
 export type CaseStatus = (typeof CASE_STATUSES)[number];
 
 export const DOC_TYPES = [
@@ -30,12 +38,25 @@ export type AcceptedMimeType = (typeof ACCEPTED_MIME_TYPES)[number];
 
 export const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 export const MAX_DOCUMENTS_PER_CASE = 10;
+export const MAX_NOTES_LENGTH = 4000;
 
 export const CaseCreateSchema = z.object({
   destinationCountry: z.enum(DESTINATION_COUNTRIES),
   title: z.string().min(1).max(200).optional(),
 });
 export type CaseCreateInput = z.infer<typeof CaseCreateSchema>;
+
+// PATCH /api/cases/[id]: update status and/or notes. Both optional so a
+// caller can send just one field; at least one must be present.
+export const CaseUpdateSchema = z
+  .object({
+    status: z.enum(CASE_STATUSES).optional(),
+    notes: z.string().max(MAX_NOTES_LENGTH).nullable().optional(),
+  })
+  .refine((v) => v.status !== undefined || v.notes !== undefined, {
+    message: "Provide status and/or notes.",
+  });
+export type CaseUpdateInput = z.infer<typeof CaseUpdateSchema>;
 
 export const DocumentMetaSchema = z.object({
   docType: z.enum(DOC_TYPES),
@@ -69,6 +90,7 @@ export type Case = {
   title: string;
   destinationCountry: DestinationCountry;
   status: CaseStatus;
+  notes: string | null;
   latestVerdict?: Verdict | null;
   createdAt: string;
   updatedAt: string;

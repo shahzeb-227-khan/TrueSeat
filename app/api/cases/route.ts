@@ -3,7 +3,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { toCase, type CaseRow } from "@/lib/cases/map";
 import { CaseCreateSchema } from "@/lib/schemas";
 
-const CASE_COLUMNS = "id, title, destination_country, status, latest_verdict, created_at, updated_at";
+const CASE_COLUMNS = "id, title, destination_country, status, notes, latest_verdict, created_at, updated_at";
 
 // GET /api/cases: list the signed-in user's cases (RLS limits rows to own cases).
 export async function GET() {

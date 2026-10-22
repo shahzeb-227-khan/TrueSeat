@@ -14,6 +14,7 @@ export type CaseRow = {
   title: string;
   destination_country: DestinationCountry;
   status: CaseStatus;
+  notes: string | null;
   latest_verdict: Verdict | null;
   created_at: string;
   updated_at: string;
@@ -35,6 +36,7 @@ export function toCase(row: CaseRow): Case {
     title: row.title,
     destinationCountry: row.destination_country,
     status: row.status,
+    notes: row.notes ?? null,
     latestVerdict: row.latest_verdict ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

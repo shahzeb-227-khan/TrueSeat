@@ -4,7 +4,8 @@ import { SignOutButton } from "@/components/sign-out-button";
 import { CaseDocuments } from "@/components/cases/case-documents";
 import { UploadLetterForm } from "@/components/cases/upload-letter-form";
 import { RunVerificationButton } from "@/components/cases/run-verification-button";
-import { DESTINATION_LABELS } from "@/lib/cases/labels";
+import { CaseStatusNotes } from "@/components/cases/case-status-notes";
+import { DESTINATION_LABELS, CASE_STATUS_LABELS } from "@/lib/cases/labels";
 import { getCaseWithDocuments } from "@/lib/cases/load";
 import { VERDICT_LABELS } from "@/lib/schemas";
 
@@ -33,10 +34,11 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
       <section>
         <h1 className="text-2xl font-semibold">{c.title}</h1>
         <p className="text-sm text-muted-foreground">
-          {DESTINATION_LABELS[c.destinationCountry]} · Status: {c.status}
+          {DESTINATION_LABELS[c.destinationCountry]} · Status: {CASE_STATUS_LABELS[c.status]}
           {verdictLabel ? ` · ${verdictLabel.emoji} ${verdictLabel.en}` : ""}
         </p>
       </section>
+      <CaseStatusNotes caseId={c.id} initialStatus={c.status} initialNotes={c.notes} />
       <CaseDocuments documents={documents} />
       <UploadLetterForm caseId={c.id} hasDocument={documents.length > 0} />
       {documents.length > 0 ? <RunVerificationButton caseId={c.id} /> : null}
