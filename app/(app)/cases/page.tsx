@@ -1,18 +1,22 @@
-import { SignOutButton } from "@/components/sign-out-button";
+import { AppShell } from "@/components/app-shell";
 import { NewCaseForm } from "@/components/cases/new-case-form";
 import { CaseList } from "@/components/cases/case-list";
-import { Logo } from "@/components/brand/logo";
+import { createServerSupabase } from "@/lib/supabase/server";
 
-export default function CasesPage() {
+export default async function CasesPage() {
+  const supabase = createServerSupabase();
+  const userEmail = supabase ? (await supabase.auth.getUser()).data.user?.email ?? null : null;
+
   return (
-    <main className="mx-auto max-w-3xl p-6">
-      <header className="mb-6 flex items-center justify-between">
-        <Logo markClassName="h-7 w-7" />
-        <SignOutButton />
-      </header>
-      <h1 className="mb-4 text-2xl font-semibold">Cases</h1>
+    <AppShell userEmail={userEmail}>
+      <div className="mb-8">
+        <h1 className="font-headline text-3xl font-normal text-text-headline">My cases</h1>
+        <p className="mt-1 text-sm text-text-metadata">
+          Create a case for each offer you want to check, then upload its documents.
+        </p>
+      </div>
       <NewCaseForm />
       <CaseList />
-    </main>
+    </AppShell>
   );
 }

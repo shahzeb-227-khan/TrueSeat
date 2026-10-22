@@ -32,11 +32,34 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        // Stitch "Authentic Verity" design-system tokens (exact hex, used
+        // where a precise match to the Stitch export is needed instead of
+        // the shadcn semantic colors above).
+        "surface-canvas": "#0A0E0F",
+        "surface-card": "#12171A",
+        "surface-card-elevated": "#151C20",
+        "border-subtle": "#1A2228",
+        "border-prominent": "#1F2933",
+        "text-headline": "#F8FAFC",
+        "text-body": "#B8C0C8",
+        "text-metadata": "#64748B",
+        "verdict-pass": "#0D9488",
+        "verdict-warning": "#B8860B",
+        "verdict-danger": "#9F1239",
+        "verdict-indeterminate": "#475569",
+      },
+      fontFamily: {
+        headline: ["var(--font-newsreader)", "Newsreader", "serif"],
+        serif: ["var(--font-newsreader)", "Newsreader", "Georgia", "serif"],
+        sans: ["var(--font-inter)", "Inter", "sans-serif"],
+        mono: ["var(--font-jetbrains-mono)", "JetBrains Mono", "monospace"],
+        urdu: ["var(--font-urdu)", "Noto Nastaliq Urdu", "serif"],
       },
       borderRadius: {
-        lg: "var(--radius)",
+        lg: "var(--radius)", // 0.5rem — cards/modals
         md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "0.25rem", // inputs/badges/inner cells
       },
     },
   },

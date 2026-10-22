@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 export function RunVerificationButton({ caseId }: { caseId: string }) {
   const router = useRouter();
@@ -32,11 +31,22 @@ export function RunVerificationButton({ caseId }: { caseId: string }) {
   }
 
   return (
-    <div className="space-y-2">
-      <Button onClick={startRun} disabled={loading}>
+    <div className="flex flex-col gap-2">
+      <button
+        onClick={startRun}
+        disabled={loading}
+        className="flex h-11 items-center justify-center gap-2 self-start rounded-full bg-primary px-6 text-sm font-semibold text-surface-canvas shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all hover:bg-verdict-pass active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span className="material-symbols-outlined text-[18px]">
+          {loading ? "hourglass_top" : "fact_check"}
+        </span>
         {loading ? "Starting verification…" : "Run verification"}
-      </Button>
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      </button>
+      {error ? (
+        <p role="alert" className="text-sm text-verdict-danger">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -2,29 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TrueSeat dark editorial theme — tokens from the Stitch "Authentic Verity"
+   design system (DESIGN.md). shadcn components (Button, Card, etc.) read the
+   --variables below; components that need an exact token (verdict colors,
+   text-metadata, etc.) use the static hex utilities added in
+   tailwind.config.ts (bg-surface-canvas, text-text-body, border-verdict-pass, ...). */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --destructive: 0 84.2% 60.2%;
+    --background: 192 20% 5%; /* #0A0E0F surface-canvas */
+    --foreground: 210 40% 98%; /* #F8FAFC text-headline */
+    --card: 202 18% 9%; /* #12171A surface-card */
+    --card-foreground: 210 40% 98%;
+    --primary: 160 84% 39%; /* #10B981 */
+    --primary-foreground: 192 20% 5%; /* #0A0E0F */
+    --secondary: 202 21% 10%; /* #151C20 surface-card-elevated */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 202 21% 10%;
+    --muted-foreground: 215 16% 47%; /* #64748B text-metadata */
+    --destructive: 343 80% 35%; /* #9F1239 verdict-danger */
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 206 21% 13%; /* #1A2228 border-subtle */
+    --input: 216 28% 7%; /* #0D1117 */
+    --ring: 160 84% 39%; /* #10B981 */
     --radius: 0.5rem;
+  }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #0a0e0f;
+  }
+  body {
+    overscroll-behavior: none;
   }
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-text-body antialiased;
+  }
+  ::-webkit-scrollbar {
+    display: none;
   }
 }

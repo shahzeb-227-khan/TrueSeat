@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { Logo } from "@/components/brand/logo";
+import { OtpInput } from "@/components/auth/otp-input";
 
 export default function ChallengePage() {
   const [supabase] = useState(() =>
@@ -56,32 +58,63 @@ export default function ChallengePage() {
   }
 
   return (
-    <main className="mx-auto mt-16 max-w-md rounded-lg border bg-white p-6">
-      <h1 className="text-2xl font-semibold">Two-factor check</h1>
-      <p className="mt-1 text-sm text-gray-600">
-        Enter the 6-digit code from your authenticator app.
-      </p>
-      <form onSubmit={verify} className="mt-4 space-y-3">
-        <input
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          inputMode="numeric"
-          maxLength={6}
-          placeholder="6-digit code"
-          className="w-full rounded-md border px-3 py-2"
-        />
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={busy || !factorId || code.trim().length !== 6}
-          className="w-full rounded-md bg-slate-900 px-3 py-2 text-white disabled:opacity-50"
-        >
-          {busy ? "Verifying..." : "Verify"}
-        </button>
-      </form>
-      <button onClick={signOut} className="mt-4 text-sm text-gray-500 underline">
-        Sign out
-      </button>
-    </main>
+    <div className="flex min-h-screen w-full flex-col justify-between bg-surface-canvas p-4 font-sans text-text-body antialiased sm:p-8">
+      <div className="flex w-full items-center justify-between">
+        <Logo markClassName="h-6 w-6" />
+        <span className="font-mono text-[10px] uppercase tracking-widest text-text-metadata">
+          Two-factor check
+        </span>
+      </div>
+
+      <main className="my-8 flex w-full flex-1 items-center justify-center">
+        <div className="relative w-full max-w-[420px]">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-16 left-1/2 h-32 w-80 -translate-x-1/2 rounded-full bg-primary/10 blur-[80px]"
+          />
+          <div className="relative w-full rounded-xl border border-border-subtle bg-surface-card p-6 shadow-2xl sm:p-9">
+            <div className="mb-7 flex flex-col items-start gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded border border-border-prominent bg-surface-card-elevated text-primary">
+                <span className="material-symbols-outlined text-lg">shield_lock</span>
+              </div>
+              <h1 className="font-headline text-[28px] font-normal leading-snug tracking-tight text-text-headline">
+                Enter your code
+              </h1>
+              <p className="font-sans text-sm text-text-metadata">
+                Open your authenticator app and enter the current 6-digit code.
+              </p>
+            </div>
+
+            <form onSubmit={verify} className="flex flex-col gap-5">
+              <OtpInput value={code} onChange={setCode} disabled={busy} />
+              {error ? (
+                <p role="alert" className="text-center text-sm text-verdict-danger">
+                  {error}
+                </p>
+              ) : null}
+              <button
+                type="submit"
+                disabled={busy || !factorId || code.trim().length !== 6}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded bg-primary text-sm font-medium text-surface-canvas shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all hover:bg-verdict-pass active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {busy ? "Verifying…" : "Verify"}
+              </button>
+            </form>
+
+            <button
+              onClick={signOut}
+              className="mt-6 w-full text-center font-mono text-[11px] uppercase tracking-wider text-text-metadata underline-offset-2 hover:text-text-headline hover:underline"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      </main>
+
+      <div className="flex w-full flex-col items-center justify-between gap-2 text-center font-mono text-[10px] uppercase tracking-widest text-text-metadata sm:flex-row">
+        <span>TrueSeat</span>
+        <span>Built for Pakistani students</span>
+      </div>
+    </div>
   );
 }

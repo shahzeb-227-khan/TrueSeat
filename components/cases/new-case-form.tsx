@@ -2,9 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DESTINATION_LABELS } from "@/lib/cases/labels";
 import { readJson } from "@/lib/cases/api";
 import { DESTINATION_COUNTRIES, type Case } from "@/lib/schemas";
@@ -36,53 +33,65 @@ export function NewCaseForm() {
   }
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="text-lg">New case</CardTitle>
-        <CardDescription>Name the offer and choose where the student plans to study.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="case-title" className="text-sm font-medium">
-              Case title
-            </label>
-            <Input
-              id="case-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. MSc Data Science offer via consultant"
-              maxLength={120}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label htmlFor="case-destination" className="text-sm font-medium">
-              Destination country
-            </label>
-            <select
-              id="case-destination"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              {DESTINATION_COUNTRIES.map((code) => (
-                <option key={code} value={code}>
-                  {DESTINATION_LABELS[code]}
-                </option>
-              ))}
-            </select>
-          </div>
-          {error && (
-            <p role="alert" className="text-sm text-red-600">
-              {error}
-            </p>
-          )}
-          <Button type="submit" disabled={saving || title.trim().length === 0}>
-            {saving ? "Creating…" : "Create case"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <div className="mb-8 rounded-[10px] border border-border-subtle bg-surface-card p-5 sm:p-6">
+      <div className="mb-5 flex items-center gap-2.5 border-b border-border-subtle pb-4">
+        <span className="material-symbols-outlined text-[18px] text-primary">add_circle</span>
+        <div>
+          <h2 className="font-headline text-lg text-text-headline">Verify a new offer</h2>
+          <p className="text-xs text-text-metadata">Name the offer and choose where the student plans to study.</p>
+        </div>
+      </div>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
+        <div className="flex-1 space-y-1.5">
+          <label
+            htmlFor="case-title"
+            className="font-mono text-[11px] uppercase tracking-wider text-text-metadata"
+          >
+            Case title
+          </label>
+          <input
+            id="case-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. MSc Data Science offer via consultant"
+            maxLength={120}
+            required
+            className="h-11 w-full rounded border border-border-subtle bg-surface-canvas px-3 text-sm text-text-headline placeholder:text-text-metadata/60 transition-colors hover:border-border-prominent focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+        <div className="space-y-1.5 sm:w-56">
+          <label
+            htmlFor="case-destination"
+            className="font-mono text-[11px] uppercase tracking-wider text-text-metadata"
+          >
+            Destination
+          </label>
+          <select
+            id="case-destination"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            className="h-11 w-full rounded border border-border-subtle bg-surface-canvas px-3 text-sm text-text-headline transition-colors hover:border-border-prominent focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            {DESTINATION_COUNTRIES.map((code) => (
+              <option key={code} value={code}>
+                {DESTINATION_LABELS[code]}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
+          type="submit"
+          disabled={saving || title.trim().length === 0}
+          className="h-11 shrink-0 rounded-full bg-primary px-5 text-xs font-semibold text-surface-canvas shadow-sm transition-colors hover:bg-verdict-pass disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {saving ? "Creating…" : "Create case"}
+        </button>
+      </form>
+      {error ? (
+        <p role="alert" className="mt-3 text-sm text-verdict-danger">
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }

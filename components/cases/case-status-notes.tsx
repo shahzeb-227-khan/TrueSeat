@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { CASE_STATUS_LABELS } from "@/lib/cases/labels";
 import { CASE_STATUSES, MAX_NOTES_LENGTH, type CaseStatus } from "@/lib/schemas";
 
@@ -44,9 +43,9 @@ export function CaseStatusNotes({
   }
 
   return (
-    <section className="space-y-3 rounded-lg border p-4">
-      <div className="flex items-center justify-between gap-3">
-        <label htmlFor="case-status" className="text-sm font-medium">
+    <section className="rounded-[10px] border border-border-subtle bg-surface-card p-5 sm:p-6">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <label htmlFor="case-status" className="font-mono text-[11px] uppercase tracking-wider text-text-metadata">
           Status
         </label>
         <select
@@ -58,7 +57,7 @@ export function CaseStatusNotes({
             setStatus(next);
             save({ status: next });
           }}
-          className="rounded-md border bg-background px-2 py-1 text-sm"
+          className="rounded border border-border-subtle bg-surface-canvas px-2.5 py-1.5 text-sm text-text-headline transition-colors hover:border-border-prominent focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         >
           {CASE_STATUSES.map((s) => (
             <option key={s} value={s}>
@@ -68,8 +67,8 @@ export function CaseStatusNotes({
         </select>
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="case-notes" className="text-sm font-medium">
+      <div className="space-y-1.5">
+        <label htmlFor="case-notes" className="font-mono text-[11px] uppercase tracking-wider text-text-metadata">
           Notes
         </label>
         <textarea
@@ -83,26 +82,29 @@ export function CaseStatusNotes({
           }}
           placeholder="e.g. Emailed the university on 22 Oct to confirm the offer letter."
           rows={3}
-          className="w-full rounded-md border bg-background p-2 text-sm"
+          className="w-full rounded border border-border-subtle bg-surface-canvas p-2.5 text-sm text-text-headline placeholder:text-text-metadata/60 transition-colors hover:border-border-prominent focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         />
         <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">
+          <p className="font-mono text-[11px] text-text-metadata">
             {notes.length}/{MAX_NOTES_LENGTH}
           </p>
-          <Button
+          <button
             type="button"
-            size="sm"
-            variant="outline"
             disabled={saving}
             onClick={() => save({ notes })}
+            className="rounded border border-border-prominent bg-surface-card-elevated px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-text-headline transition-colors hover:border-primary/50 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save notes"}
-          </Button>
+          </button>
         </div>
       </div>
 
-      {error ? <p role="alert" className="text-sm text-red-600">{error}</p> : null}
-      {saved && !error ? <p className="text-xs text-emerald-600">Saved.</p> : null}
+      {error ? (
+        <p role="alert" className="mt-3 text-sm text-verdict-danger">
+          {error}
+        </p>
+      ) : null}
+      {saved && !error ? <p className="mt-3 text-xs text-primary">Saved.</p> : null}
     </section>
   );
 }
