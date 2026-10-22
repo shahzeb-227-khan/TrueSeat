@@ -159,7 +159,7 @@ export default async function GuidePage() {
               </div>
               <div className="rounded border border-verdict-pass/20 bg-surface-canvas p-3">
                 <span className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-verdict-pass">
-                  What's actually true
+                  What&apos;s actually true
                 </span>
                 <p className="text-xs leading-relaxed text-text-body">{p.reality}</p>
               </div>
@@ -171,13 +171,14 @@ export default async function GuidePage() {
       {/* If you've already paid or shared details */}
       <section className="mb-10 flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-card p-6 sm:p-8">
         <h2 className="font-headline text-xl font-normal text-text-headline">
-          If you've already sent money or shared documents
+          If you&apos;ve already sent money or shared documents
         </h2>
         <ol className="flex flex-col gap-3 text-sm leading-relaxed text-text-body">
           <li className="flex gap-3">
             <span className="font-mono text-primary">01</span>
             <span>
-              Stop all further payments immediately. Don&apos;t send more money to try to "fix" the situation.
+              Stop all further payments immediately. Don&apos;t send more money to try to &quot;fix&quot; the
+              situation.
             </span>
           </li>
           <li className="flex gap-3">
@@ -222,7 +223,7 @@ export default async function GuidePage() {
               FIA Cyber Crime Wing (Pakistan)
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-text-body">
-              The Federal Investigation Agency's Cyber Crime Wing handles reports of online fraud, including
+              The Federal Investigation Agency&apos;s Cyber Crime Wing handles reports of online fraud, including
               education and visa scams.
             </p>
           </div>

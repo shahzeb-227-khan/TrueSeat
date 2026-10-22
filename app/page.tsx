@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { VERDICT_LABELS } from "@/lib/schemas";
+import { LandingUpload } from "@/components/landing-upload";
 
 const VERDICT_ROWS: {
   key: keyof typeof VERDICT_LABELS;
@@ -182,24 +183,7 @@ export default async function Home() {
                 </div>
               </div>
 
-              <Link
-                href="/sign-up"
-                className="group flex cursor-pointer flex-col items-center justify-center rounded-[8px] border-2 border-dashed border-border-subtle bg-surface-canvas/40 p-8 text-center transition-colors hover:border-primary/50 sm:p-10"
-              >
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-border-subtle bg-surface-card-elevated text-text-body transition-colors group-hover:border-primary/30 group-hover:text-primary">
-                  <span className="material-symbols-outlined text-[24px]">cloud_upload</span>
-                </div>
-                <div className="mb-1 text-sm font-medium text-text-headline">
-                  Create a free account to upload your offer letter
-                </div>
-                <div className="mb-4 max-w-sm text-xs text-text-metadata">
-                  Accepts PDF, JPG, PNG and plain text — up to 15MB per file, up to 10 documents per case.
-                </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-surface-canvas shadow-sm transition-colors group-hover:bg-verdict-pass">
-                  <span className="material-symbols-outlined text-[16px]">add</span>
-                  <span>Get started — takes under a minute</span>
-                </span>
-              </Link>
+              <LandingUpload />
 
               <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-3 text-xs text-text-metadata">
                 <div className="flex items-center gap-2">
@@ -223,11 +207,11 @@ export default async function Home() {
                 Verdict system
               </div>
               <h2 className="font-headline text-3xl font-normal tracking-tight text-text-headline sm:text-4xl">
-                Four possible verdicts — never a loud false "all clear"
+                Four possible verdicts — never a loud false &quot;all clear&quot;
               </h2>
               <p className="max-w-2xl font-sans text-sm text-text-body">
-                Every document gets one of four verdicts, computed by TrueSeat's own rules — not by the AI. The AI
-                only reads documents and explains the findings; it never decides the verdict.
+                Every document gets one of four verdicts, computed by TrueSeat&apos;s own rules — not by the AI. The
+                AI only reads documents and explains the findings; it never decides the verdict.
               </p>
             </div>
 
@@ -377,8 +361,8 @@ export default async function Home() {
                   <div className="text-xs font-medium text-text-headline">Independent — not an official authority</div>
                   <p className="max-w-3xl text-xs leading-relaxed text-text-metadata">
                     TrueSeat is not affiliated with any government body, embassy, or university, and does not issue
-                    visas or accept admission deposits. A "checks passed" result is not a guarantee — always confirm
-                    directly with the university before paying.
+                    visas or accept admission deposits. A &quot;checks passed&quot; result is not a guarantee — always
+                    confirm directly with the university before paying.
                   </p>
                 </div>
               </div>
