@@ -46,7 +46,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
       { status: 415 }
     );
   }
-  const meta = DocumentMetaSchema.safeParse({ docType: form?.get("docType") });
+  const meta = DocumentMetaSchema.safeParse({
+    docType: form?.get("docType"),
+    mimeType: file.type,
+    fileName: file.name,
+    sizeBytes: file.size,
+  });
   if (!meta.success) {
     return NextResponse.json({ error: "invalid_input", message: meta.error.issues[0]?.message }, { status: 400 });
   }
