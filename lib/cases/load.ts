@@ -14,7 +14,7 @@ export async function getCaseWithDocuments(
 
   const { data: row } = await supabase
     .from("cases")
-    .select("id, title, destination_country, status, created_at, updated_at")
+    .select("id, title, destination_country, status, latest_verdict, created_at, updated_at")
     .eq("id", id)
     .maybeSingle();
   if (!row) return "not_found";

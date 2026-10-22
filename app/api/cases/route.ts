@@ -3,6 +3,8 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { toCase, type CaseRow } from "@/lib/cases/map";
 import { CaseCreateSchema } from "@/lib/schemas";
 
+const CASE_COLUMNS = "id, title, destination_country, status, latest_verdict, created_at, updated_at";
+
 // GET /api/cases: list the signed-in user's cases (RLS limits rows to own cases).
 export async function GET() {
   const supabase = createServerSupabase();
@@ -13,7 +15,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("cases")
-    .select("id, title, destination_country, status, created_at, updated_at")
+    .select(CASE_COLUMNS)
     .order("updated_at", { ascending: false });
   if (error) return NextResponse.json({ error: "db_error" }, { status: 500 });
 
@@ -44,7 +46,7 @@ export async function POST(request: Request) {
       title: parsed.data.title,
       destination_country: parsed.data.destinationCountry,
     })
-    .select("id, title, destination_country, status, created_at, updated_at")
+    .select(CASE_COLUMNS)
     .single();
   if (error || !data) return NextResponse.json({ error: "db_error" }, { status: 500 });
 

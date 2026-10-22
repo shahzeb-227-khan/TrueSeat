@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DESTINATION_LABELS } from "@/lib/cases/labels";
 import { readJson } from "@/lib/cases/api";
-import type { Case } from "@/lib/schemas";
+import { VERDICT_LABELS, type Case } from "@/lib/schemas";
 
 export function CaseList() {
   const [cases, setCases] = useState<Case[] | null>(null);
@@ -45,19 +45,29 @@ export function CaseList() {
 
   return (
     <ul className="space-y-3">
-      {cases.map((c) => (
-        <li key={c.id}>
-          <Link
-            href={`/cases/${c.id}`}
-            className="block rounded-lg border p-4 hover:bg-secondary"
-          >
-            <p className="font-medium">{c.title}</p>
-            <p className="text-sm text-muted-foreground">
-              {DESTINATION_LABELS[c.destinationCountry]} · {new Date(c.createdAt).toLocaleDateString()}
-            </p>
-          </Link>
-        </li>
-      ))}
+      {cases.map((c) => {
+        const verdictLabel = c.latestVerdict ? VERDICT_LABELS[c.latestVerdict] : null;
+        return (
+          <li key={c.id}>
+            <Link
+              href={`/cases/${c.id}`}
+              className="block rounded-lg border p-4 hover:bg-secondary"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-medium">{c.title}</p>
+                {verdictLabel ? (
+                  <span className="shrink-0 text-sm">
+                    {verdictLabel.emoji} {verdictLabel.en}
+                  </span>
+                ) : null}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {DESTINATION_LABELS[c.destinationCountry]} · {new Date(c.createdAt).toLocaleDateString()}
+              </p>
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }

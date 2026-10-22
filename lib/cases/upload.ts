@@ -6,6 +6,8 @@ const EXTENSIONS: Record<AcceptedMimeType, string> = {
   "application/pdf": "pdf",
   "image/jpeg": "jpg",
   "image/png": "png",
+  "image/webp": "webp",
+  "text/plain": "txt",
 };
 
 export function isUuid(value: string): boolean {

@@ -14,7 +14,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 
   const { data: row, error } = await supabase
     .from("cases")
-    .select("id, title, destination_country, status, created_at, updated_at")
+    .select("id, title, destination_country, status, latest_verdict, created_at, updated_at")
     .eq("id", params.id)
     .maybeSingle();
   if (error) return NextResponse.json({ error: "db_error" }, { status: 500 });

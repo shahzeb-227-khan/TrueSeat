@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { CaseDocuments } from "@/components/cases/case-documents";
 import { UploadLetterForm } from "@/components/cases/upload-letter-form";
+import { RunVerificationButton } from "@/components/cases/run-verification-button";
 import { DESTINATION_LABELS } from "@/lib/cases/labels";
 import { getCaseWithDocuments } from "@/lib/cases/load";
+import { VERDICT_LABELS } from "@/lib/schemas";
 
 export default async function CaseDetailPage({ params }: { params: { id: string } }) {
   const found = await getCaseWithDocuments(params.id);
@@ -17,7 +19,9 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
     );
   }
 
-  const { case: c, documents } = found;
+  const { documents, ...c } = found;
+  const verdictLabel = c.latestVerdict ? VERDICT_LABELS[c.latestVerdict] : null;
+
   return (
     <main className="mx-auto max-w-3xl space-y-6 p-6">
       <header className="flex items-center justify-between">
@@ -29,11 +33,13 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
       <section>
         <h1 className="text-2xl font-semibold">{c.title}</h1>
         <p className="text-sm text-muted-foreground">
-          {DESTINATION_LABELS[c.destinationCountry]} · Status: open
+          {DESTINATION_LABELS[c.destinationCountry]} · Status: {c.status}
+          {verdictLabel ? ` · ${verdictLabel.emoji} ${verdictLabel.en}` : ""}
         </p>
       </section>
       <CaseDocuments documents={documents} />
       <UploadLetterForm caseId={c.id} hasDocument={documents.length > 0} />
+      {documents.length > 0 ? <RunVerificationButton caseId={c.id} /> : null}
     </main>
   );
 }
