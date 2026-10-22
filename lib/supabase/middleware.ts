@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseEnv } from "./env";
 
-const PUBLIC_PATHS = ["/sign-in", "/sign-up", "/api/health"];
+const PUBLIC_PATHS = ["/", "/sign-in", "/sign-up", "/api/health"];
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 

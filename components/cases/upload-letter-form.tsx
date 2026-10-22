@@ -48,7 +48,7 @@ export function UploadLetterForm({ caseId, hasDocument }: { caseId: string; hasD
         <CardDescription>JPG, PNG or PDF, up to 10 MB. Files are stored privately.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} noValidate className="space-y-4">
           <div className="space-y-1.5">
             <label htmlFor="doc-type" className="text-sm font-medium">
               Type of letter

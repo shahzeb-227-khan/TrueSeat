@@ -8,6 +8,7 @@ import { getSupabaseEnv, MISSING_ENV_MESSAGE } from "@/lib/supabase/env";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Logo } from "@/components/brand/logo";
 
 export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter();
@@ -54,7 +55,10 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
+      <Link href="/" aria-label="TrueSeat home">
+        <Logo />
+      </Link>
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>{isSignIn ? "Sign in" : "Create account"}</CardTitle>
