@@ -76,8 +76,12 @@ async function callClaude(system: string, parts: ModelPart[]): Promise<ModelCall
 }
 
 async function callGemini(system: string, parts: ModelPart[]): Promise<ModelCallResult> {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) throw Object.assign(new Error("GOOGLE_API_KEY not set"), { code: "no_key" });
+  // Accept either name: README/.env.example historically documented
+  // GEMINI_API_KEY, while this file originally read GOOGLE_API_KEY. Reading
+  // both means a key set under either name in Vercel actually works, instead
+  // of the fallback provider silently never firing on a naming mismatch.
+  const apiKey = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
+  if (!apiKey) throw Object.assign(new Error("GEMINI_API_KEY (or GOOGLE_API_KEY) not set"), { code: "no_key" });
 
   const geminiParts = parts.map((p) =>
     p.type === "text" ? { text: p.text } : { inlineData: { mimeType: p.mimeType, data: p.base64 } }

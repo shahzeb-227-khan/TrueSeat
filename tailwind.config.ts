@@ -43,7 +43,11 @@ const config: Config = {
         "border-prominent": "#1F2933",
         "text-headline": "#F8FAFC",
         "text-body": "#B8C0C8",
-        "text-metadata": "#64748B",
+        // Lightened from the original Stitch #64748B: that value is ~4.08:1
+        // against #0A0E0F, which fails WCAG AA (4.5:1) for the small text
+        // this token is used for everywhere (labels, timestamps, captions).
+        // #7C8A9C keeps the same hue and is ~5.5:1, passing AA at any size.
+        "text-metadata": "#7C8A9C",
         "verdict-pass": "#0D9488",
         "verdict-warning": "#B8860B",
         "verdict-danger": "#9F1239",

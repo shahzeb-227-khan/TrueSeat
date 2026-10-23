@@ -6,13 +6,13 @@
 
 TrueSeat is an AI verification agent for Pakistani students and families. Upload an admission letter, scholarship letter, fee receipt or a consultant's WhatsApp message. TrueSeat reads it, checks the university against official government registers, checks whether the emails, websites and payment details actually belong to that university, and explains in Urdu or English, with quoted evidence, what checks out, what doesn't, and how to confirm the offer directly with the university.
 
-> **Status: pre-build.** This repository contains documentation only until **19 October 2026, 9:00 AM PKT**, as required by the hackathon rules. Product code is written during the build window (19–22 October 2026). Sections marked *(planned)* will be completed during the build.
+> **Status: built during the 19–22 October 2026 window** (code freeze extended to 23 Oct 2026, 5:00 PM PKT). See [PRIOR_WORK.md](./PRIOR_WORK.md) for the prior-work declaration and [AI_DISCLOSURE.md](./AI_DISCLOSURE.md) for how the AI stages and third-party data are used.
 
 Built for **Build The Next Big Thing with AI** — Devmarketplace × NED University of Engineering & Technology.
 
 - 📄 Full specification: [SPEC.md](./SPEC.md)
-- 🌐 Live app: *(planned — link added during the build)*
-- 🎬 Demo video: *(planned — link added at submission)*
+- 🌐 Live app: [trueseatai.vercel.app](https://trueseatai.vercel.app)
+- 🎬 Demo video: *(link added at submission)*
 
 ---
 
@@ -101,25 +101,29 @@ Each import records the source URL, download date and row count, and the app alw
 
 ---
 
-## Phase 1 scaffold (current)
+## What's live
 
-`npm install && npm run dev`. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (see `.env.example`). Routes: `/sign-in`, `/sign-up`, protected `/cases`, `GET /api/health`. Without the vars the sign-in page renders with a configuration notice.
+| Area | Routes |
+|---|---|
+| Public | `/` (landing, with upload-to-sign-up), `/guide` (scam patterns & FIA contacts), `/registries` (official registry lookup) |
+| Auth | `/sign-in`, `/sign-up`, `/mfa/enroll` (TOTP QR setup), `/mfa/challenge` |
+| App (AAL2-gated) | `/cases`, `/cases/[id]`, `/cases/[id]/results/[runId]` |
+| API | `/api/cases`, `/api/cases/[id]`, `/api/cases/[id]/documents`, `/api/runs`, `/api/runs/[id]`, `/api/account`, `/api/health` (keep-alive target, see `.github/workflows/keepalive.yml`) |
 
-## Getting started *(planned)*
-
-Setup instructions will be added during the build. Planned outline:
+## Getting started
 
 ```bash
 git clone https://github.com/<team>/trueseat.git
 cd trueseat
-cp .env.example .env.local     # add Supabase and AI provider keys
+cp .env.example .env.local     # add Supabase and AI provider keys (see table below)
 npm install
-npx supabase db push           # run migrations
-npm run import:registries      # load official registry snapshots
+npx supabase db push           # applies schema, RLS and the seeded registry data in supabase/migrations/
 npm run dev
 ```
 
-### Environment variables *(planned)*
+Without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` set, the sign-in page renders with a configuration notice instead of failing.
+
+### Environment variables
 
 | Variable | Purpose |
 |---|---|
@@ -127,16 +131,20 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key (RLS enforced) |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Server-only**, used by migrations and imports, never by user routes |
 | `ANTHROPIC_API_KEY` | Primary AI provider (server-only) |
-| `GEMINI_API_KEY` | Fallback AI provider (server-only) |
+| `GEMINI_API_KEY` | Fallback AI provider (server-only). `GOOGLE_API_KEY` also works, for compatibility |
 
 ---
 
-## Testing *(planned)*
+## Testing
 
-- Unit tests for every deterministic check (registry match, domain match, look-alike, payment, consistency, verdict rules).
-- quote-guard and number-and-name guard tests.
-- Two-account isolation tests and an AAL1 (password-only) access test.
-- Evaluation on ~24 labelled synthetic cases, including prompt-injection attempts. **Results will be reported here with the sample size; no accuracy is claimed before then.**
+```bash
+npm test             # unit tests: registry match, domain match, look-alike,
+                      # payment, cross-document consistency, verdict rules,
+                      # quote-guard (vitest, see tests/unit/)
+npm run test:isolation   # two-account isolation + AAL1 access checks (tests/isolation.mjs)
+```
+
+Evaluation on ~24 labelled synthetic cases (including prompt-injection attempts) is run per [SPEC.md §15](./SPEC.md#15-evaluation-plan); results are reported here with the sample size once complete — no accuracy is claimed before then.
 
 ---
 
@@ -149,7 +157,7 @@ npm run dev
 | M3 Auth + 2FA + separate data | Supabase Auth, mandatory TOTP, RLS with `aal2`, isolation tests |
 | M4 End-to-end journey | Sign up → 2FA → upload → verify → save → sign in again → retrieve |
 | M5 Repo and docs | README.md, [SPEC.md](./SPEC.md), AI_DISCLOSURE.md, PRIOR_WORK.md; commits throughout 19–22 Oct |
-| M6 Two code gigs | `quote-guard`, `supabase-mfa-guard` *(links added when published)* |
+| M6 Two code gigs | `quote-guard` (`applyQuoteGuard` in `lib/ai/scanRedFlags.ts`), `supabase-mfa-guard` (`app/(auth)/mfa/` + the `aal2` RLS policies in `supabase/migrations/`) — **TODO before submission: publish both on Devmarketplace and paste the links here** |
 
 ---
 

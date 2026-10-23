@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -31,25 +32,85 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Below lg, the sidebar is an off-canvas drawer. Close it on route change
+  // and on Escape so it can never get stuck open over the content.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
 
   return (
     <div className="min-h-screen bg-surface-canvas">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col justify-between border-r border-border-prominent bg-surface-canvas p-5">
+      {/* Mobile top bar — only shown below lg, where the sidebar is off-canvas */}
+      <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border-prominent bg-surface-canvas/95 px-4 backdrop-blur-md lg:hidden">
+        <Link href="/cases" className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md border border-border-prominent bg-surface-card text-primary">
+            <span className="material-symbols-outlined text-[18px]">verified_user</span>
+          </div>
+          <span className="font-headline text-lg font-medium leading-none tracking-tight text-text-headline">
+            TrueSeat
+          </span>
+        </Link>
+        <button
+          type="button"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
+          onClick={() => setMobileOpen((v) => !v)}
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-border-subtle bg-surface-card text-text-headline"
+        >
+          <span className="material-symbols-outlined text-[22px]">{mobileOpen ? "close" : "menu"}</span>
+        </button>
+      </header>
+
+      {/* Backdrop for the mobile drawer */}
+      {mobileOpen ? (
+        <div
+          aria-hidden
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+        />
+      ) : null}
+
+      {/* Sidebar — fixed and always visible at lg+; an off-canvas drawer below it */}
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-full w-72 max-w-[85vw] flex-col justify-between border-r border-border-prominent bg-surface-canvas p-5 transition-transform duration-200 ease-out lg:translate-x-0 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <div className="flex flex-col gap-6">
-          <Link href="/cases" className="flex items-center gap-3 px-1 py-1">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md border border-border-prominent bg-surface-card text-primary shadow-inner">
-              <span className="material-symbols-outlined text-[20px]">verified_user</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-headline text-xl font-medium leading-none tracking-tight text-text-headline">
-                TrueSeat
-              </span>
-              <span className="mt-1 font-sans text-[11px] uppercase tracking-wider text-text-metadata">
-                Offer verification
-              </span>
-            </div>
-          </Link>
+          <div className="flex items-center justify-between px-1 py-1">
+            <Link href="/cases" className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-md border border-border-prominent bg-surface-card text-primary shadow-inner">
+                <span className="material-symbols-outlined text-[20px]">verified_user</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-headline text-xl font-medium leading-none tracking-tight text-text-headline">
+                  TrueSeat
+                </span>
+                <span className="mt-1 font-sans text-[11px] uppercase tracking-wider text-text-metadata">
+                  Offer verification
+                </span>
+              </div>
+            </Link>
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setMobileOpen(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-md text-text-metadata hover:text-text-headline lg:hidden"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
 
           <nav className="mt-2 flex flex-col gap-1.5">
             {NAV_ITEMS.map((item) => {
@@ -85,34 +146,46 @@ export function AppShell({
         </div>
 
         {/* Account panel — real account info, no fabricated claims */}
-        <div className="flex flex-col gap-2 rounded-lg border border-border-prominent bg-surface-card p-3.5">
-          <div className="flex items-center justify-between">
-            <span className="font-sans text-[11px] uppercase tracking-wider text-text-metadata">
-              Signed in
-            </span>
-            <span className="rounded border border-primary/30 bg-surface-canvas px-1.5 py-0.5 font-mono text-[10px] font-semibold text-primary">
-              AAL2
-            </span>
+        {userEmail ? (
+          <div className="flex flex-col gap-2 rounded-lg border border-border-prominent bg-surface-card p-3.5">
+            <div className="flex items-center justify-between">
+              <span className="font-sans text-[11px] uppercase tracking-wider text-text-metadata">
+                Signed in
+              </span>
+              <span className="rounded border border-primary/30 bg-surface-canvas px-1.5 py-0.5 font-mono text-[10px] font-semibold text-primary">
+                AAL2
+              </span>
+            </div>
+            <p className="truncate font-sans text-xs leading-relaxed text-text-body">{userEmail}</p>
+            <div className="mt-1 flex items-center justify-between gap-2">
+              <SignOutButton />
+              <DeleteAccountButton />
+            </div>
           </div>
-          <p className="truncate font-sans text-xs leading-relaxed text-text-body">
-            {userEmail ?? "Unknown account"}
-          </p>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <SignOutButton />
-            <DeleteAccountButton />
+        ) : (
+          <div className="flex flex-col gap-2.5 rounded-lg border border-border-prominent bg-surface-card p-3.5">
+            <p className="font-sans text-xs leading-relaxed text-text-body">
+              Sign in to verify an offer and keep your cases.
+            </p>
+            <Link
+              href="/sign-in"
+              className="flex items-center justify-center rounded border border-border-subtle bg-surface-card-elevated px-3 py-1.5 text-center font-mono text-[11px] uppercase tracking-wider text-text-headline transition-colors hover:border-primary/50"
+            >
+              Sign in
+            </Link>
           </div>
-        </div>
+        )}
       </aside>
 
       {/* Main content */}
-      <div className="pl-72">
-        <header className="fixed left-72 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-border-prominent bg-surface-canvas/90 px-8 backdrop-blur-md">
+      <div className="lg:pl-72">
+        <header className="fixed inset-x-0 top-0 z-30 hidden h-16 items-center justify-between border-b border-border-prominent bg-surface-canvas/90 px-8 backdrop-blur-md lg:left-72 lg:flex">
           <p className="font-sans text-xs text-text-metadata">
             Not affiliated with any government body, embassy or university. Verdicts are checks, not guarantees —
             always confirm with the university directly before paying.
           </p>
         </header>
-        <main className="relative min-h-screen w-full bg-surface-canvas px-8 pb-16 pt-24">
+        <main className="relative min-h-screen w-full bg-surface-canvas px-4 pb-16 pt-20 sm:px-6 lg:px-8 lg:pt-24">
           <div className="mx-auto flex w-full max-w-7xl flex-col">{children}</div>
         </main>
       </div>

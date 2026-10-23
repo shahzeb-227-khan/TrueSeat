@@ -41,7 +41,26 @@
   body {
     @apply bg-background text-text-body antialiased;
   }
+  /* A visible (if unobtrusive) scrollbar instead of hiding it outright —
+     hiding it removes a real signal of how much content there is and
+     where you are in it, which is a basic usability cue. */
   ::-webkit-scrollbar {
-    display: none;
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #1a2228; /* border-prominent */
+    border-radius: 9999px;
+    border: 2px solid #0a0e0f; /* surface-canvas, gives the inset look */
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #2a343c;
+  }
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #1a2228 transparent;
   }
 }
